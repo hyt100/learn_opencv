@@ -1,2 +1,14 @@
-# learn_opencv
-Learn and practice opencv API
+### 1 开发环境
+
+- opencv 4.5.1
+
+- c++11
+
+- cmake 3.5或以上
+
+### 2 测试程序
+
+#### 001 查看版本
+
+
+
