@@ -7,6 +7,10 @@ using namespace std;
 
 int main()
 {
+    // 打印opencv版本信息
     printf("%d.%d.%d \n", cv::getVersionMajor(), cv::getVersionMinor(), cv::getVersionRevision());
+
+    // 打印opencv编译信息
+    printf("%s \n", cv::getBuildInformation().c_str());
     return 0;
 }
