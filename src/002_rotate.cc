@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <opencv2/opencv.hpp>
+#include <opencv2/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -26,6 +27,11 @@ int main()
     cv::transpose(m, m2);
     cv::flip(m2, m22, 1);
     cv::imshow("case2", m22);
+
+    // 方法三： 旋转接口(支持90/180/270)
+    cv::Mat m3;
+    cv::rotate(m, m3, cv::ROTATE_90_CLOCKWISE);
+    cv::imshow("case3", m3);
 
     cv::waitKey(0);
 
