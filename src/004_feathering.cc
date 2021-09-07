@@ -48,9 +48,19 @@ int main(int argc, char *argv[])
     // generate test file
     change_color("../data/feathering0.jpg", "../data/feathering1.jpg");
 
-    cv::Mat img_dst(400, 1100, CV_8UC3);
+    cv::Mat img_dst(400, 1100, CV_8UC3); // 融合拼接
+    cv::Mat img_dst_compare(400, 1100, CV_8UC3); //直接拼接
     cv::Mat img_src1 = cv::imread("../data/feathering1.jpg");
     cv::Mat img_src2 = cv::imread("../data/feathering2.jpg");
+
+    for (int row = 0; row < 400; ++row) {
+        for (int col = 0; col < 550; ++col) {
+            img_dst_compare.at<cv::Vec3b>(row, col) = img_src1.at<cv::Vec3b>(row, col);
+        }
+        for (int col = 550; col < 1100; ++col) {
+            img_dst_compare.at<cv::Vec3b>(row, col) = img_src2.at<cv::Vec3b>(row, col-550);
+        }
+    }
 
     for (int row = 0; row < 400; ++row) {
         // 0-470: 图像1独立区域
@@ -76,6 +86,7 @@ int main(int argc, char *argv[])
     cv::imshow("img1", img_src1);
     cv::imshow("img2", img_src2);
     cv::imshow("img3", img_dst);
+    cv::imshow("img4", img_dst_compare);
     cv::waitKey(0);
     return 0;
 }
