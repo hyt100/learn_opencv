@@ -9,3 +9,6 @@ target_link_libraries(003 ${OpenCV_LIBS})
 
 add_executable(004 004_feathering.cc)
 target_link_libraries(004 ${OpenCV_LIBS})
+
+add_executable(005 005_colorspace_convert.cc)
+target_link_libraries(005 ${OpenCV_LIBS})
