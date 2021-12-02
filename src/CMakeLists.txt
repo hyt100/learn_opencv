@@ -15,3 +15,6 @@ target_link_libraries(005 ${OpenCV_LIBS})
 
 add_executable(006 006_hist.cc)
 target_link_libraries(006 ${OpenCV_LIBS})
+
+add_executable(007 007_resize.cc)
+target_link_libraries(007 ${OpenCV_LIBS})
