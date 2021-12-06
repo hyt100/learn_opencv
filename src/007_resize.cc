@@ -7,6 +7,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+
 void resize_nearest(cv::Mat &src, cv::Mat &dst, cv::Size dsize)
 {
     cv::Size ssize(src.cols, src.rows);
@@ -141,12 +142,66 @@ void resize_bicubic(cv::Mat &src, cv::Mat &dst, cv::Size dsize)
     }
 }
 
+// 根据面积变化比例划分原图，并进行求平均：仅支持缩小
+void resize_area(cv::Mat &src, cv::Mat &dst, cv::Size dsize)
+{
+    cv::Size ssize(src.cols, src.rows);
+    if (dsize.width > ssize.width || dsize.height > ssize.height) {
+        std::cout << "not support zoom " << std::endl;
+        return;
+    }
+
+    dst = cv::Mat(dsize, CV_8UC3);
+    float delta_x = 1.0 * ssize.width / dsize.width;
+    float delta_y = 1.0 * ssize.height / dsize.height;
+
+    for (int x = 0; x < dsize.width; ++x) {
+        for (int y = 0; y < dsize.height; ++y) {
+            float u0 = delta_x * x, v0 = delta_y * y;
+            float u1 = u0 + delta_x, v1 = v0 + delta_y;
+            int u0_int = (int)u0, v0_int = (int)v0;
+            int u1_int = (int)std::ceil(u1), v1_int = (int)std::ceil(v1);
+            
+            cv::Vec3f color(0.0f, 0.0f, 0.0f);
+            int pixel_num = 0;
+            for (int u = u0_int; u <= u1_int; ++u) {
+                for (int v = v0_int; v <= v1_int; ++v) {
+                    float m = 1.0f, n = 1.0f;
+                    if (u == u0_int)
+                        m = u0_int + 1 - u0;
+                    if (v == v0_int)
+                        n = v0_int + 1 - v0;
+                    if (u == u1_int)
+                        m = u1 - (u1_int - 1);
+                    if (v == v1_int)
+                        n = v1 - (v1_int - 1);
+                    
+                    float k = m * n;
+                    color += src.at<cv::Vec3b>(v, u) * k;
+                    pixel_num++;
+                }
+            }
+            color /= pixel_num;
+
+            color[0] = std::clamp(color[0], 0.0f, 255.0f);
+            color[1] = std::clamp(color[1], 0.0f, 255.0f);
+            color[2] = std::clamp(color[2], 0.0f, 255.0f);
+            dst.at<cv::Vec3b>(y, x) = cv::Vec3b((uint8_t)color[0], (uint8_t)color[1], (uint8_t)color[2]);
+        }
+    }
+}
+
 int main(int argc, char *argv[])
 {
     cv::Mat origin = cv::imread("../data/lena.jpg");
     int width = origin.cols, height = origin.rows;
     std::cout << "image size: " << width << "x" << height << std::endl;
-    // cv::imshow("origin", origin);
+    cv::imshow("origin", origin);
+
+    // area
+    cv::Mat area;
+    resize_area(origin, area, cv::Size(128, 128));
+    cv::imshow("area", area);
 
     // nearest
     cv::Mat nearest;
